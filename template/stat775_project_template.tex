@@ -1,0 +1,87 @@
+\documentclass[12pt, twoside]{article}
+\input{stat775_project_header} % includes all of the macros and sets default layout and formating
+
+\title{Your title here}
+\author{Your names here}
+\begin{document}
+\onehalfspacing % don't change the spacing
+\maketitle
+
+\section{Introduction}
+You should write an introduction.
+The last paragraph of your introduction should provide an outline for the rest of the paper. 
+C.f. most published papers whose introductions include a sentence like ``The rest of this paper is organized as follows'' or ``Here is a plan for the rest of the paper.''
+
+\section{Body of the paper}
+
+Depending on your specific choice of project, you should use as many sections as needed.
+Look to the published literature for guidance on how to organize different sections. 
+For empirical analyses, generally the second section introduces the data and provides some literature review. 
+That is often followed by separate sections describing the models \& methods used, empirical results (on simulated and/or real data, as necessary), and a discussion.
+For methodological and theoretical works, the structure is similar.
+
+There is not one set standard and I encourage you to use whatever organization seems most effective to you. 
+
+You should use figures and tables as appropriate. 
+Figure~\ref{fig:bayes} is an example; it shows Rev. Thomas Bayes.
+
+\begin{figure}[H] % H forces the figure to appear in this location, h! tries really hard to do the same thing
+\centering
+\includegraphics[width = 0.25\textwidth]{bayes} % no need to specify a file extension & pay attention to scaling by width!
+\caption{All figures must have a caption \textit{below} the figure}
+\label{fig:bayes} % useful for hyperref'ing later
+\end{figure}
+
+Sometimes you need to include multi-part figures like Figure~\ref{fig:multipart_figure}.
+Figure~\ref{fig:bayes2} shows Rev. Thomas Bayes while Figures~\ref{fig:lindley} and~\ref{fig:box} show pictures of Dennis Lindley and George E.P. Box, respectively.
+\begin{figure}[H]
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\includegraphics[width = \textwidth]{bayes}
+\caption{}
+\label{fig:bayes2}
+\end{subfigure}
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\includegraphics[width = \textwidth]{lindley}
+\caption{}
+\label{fig:lindley}
+\end{subfigure}
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\includegraphics[width = \textwidth]{box}
+\caption{}
+\label{fig:box}
+\end{subfigure}
+\caption{Thomas Bayes (a), Dennis Lindley (b), and George E.P. Box (c)}
+\label{fig:multipart_figure}
+\end{figure}
+
+
+You might find it necessary to include a Table to, e.g., report the results of a comprehensive simulation study.
+Here is one such example
+
+\begin{table}[H]
+\centering
+\caption{Table captions go above the table. Try to avoid unnecessary vertical lines between columns and horizontal lines between non-terminal rows}
+\label{tab:results}
+\begin{tabular}{lcr} % note the 
+\hline
+Column A & Column B & Column C \\ \hline
+1 & 2 & 3 \\
+4 & 5 & 6 \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+You should conclude your report with a short discussion.
+Immediately following the discussion should be a list of references.
+If you do not already use BibTeX and natbib, now is a great time to learn!
+You should cite any sources using the commands \texttt{citet} for inline references and \texttt{citep} for parenthetical references. 
+So you would use \texttt{citet} to write something like ``\citet{Deshpande2019_mSSL} introduced an EM-like algorithm for simultaneous variable and covariance selection in multi-outcome linear models'' and you would use \texttt{citep} for a sentence like ``Spike-and-slab priors can be effectively deployed to perform simultaneous variable and covariance selection in multi-outcome linear models \citep{Deshpande2019_mSSL}.''
+
+You should save your references in a \texttt{.bib} file that is located in the same directory as your LaTeX files.
+
+\bibliography{references}
+
+\end{document}
