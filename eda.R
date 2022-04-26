@@ -290,6 +290,7 @@ dance_beta_samples = dance_beta_samples %>%
   pivot_longer(cols=all_of(cols_to_pivot)) %>% 
   mutate(decade=str_sub(coef, start=-1))
 
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 ggplot(dance_beta_samples, aes(x=value, color=decade)) +
   geom_density(key_glyph=draw_key_path) +
   theme_bw() +
@@ -299,7 +300,9 @@ ggplot(dance_beta_samples, aes(x=value, color=decade)) +
         axis.text=element_text(color="black")) +
   ylab("Density") + 
   xlab("Danceability Coefficient") +
-  ggtitle("Posterior Danceability\nCoefficient Distribution")
+  ggtitle("Posterior Danceability\nCoefficient Distribution") +
+  labs(color="Decade") +
+  scale_color_manual(values=cbPalette)
 ggsave("./plots/danceabiltiy_dist.png", height=5, width=7)
 
 
