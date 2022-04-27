@@ -2,8 +2,8 @@ library(tidyverse)
 library(reshape2)
 library(GGally)
 
-setwd("~/STAT775/Project")
-source("load.R")
+setwd("~./STAT775/Project")
+source("./src/load.R")
 
   # Load data and models
 data = load_spotify_data()
@@ -300,7 +300,7 @@ ggplot(dance_beta_samples, aes(x=value, color=decade)) +
         axis.text=element_text(color="black")) +
   ylab("Density") + 
   xlab("Danceability Coefficient") +
-  ggtitle("Posterior Danceability\nCoefficient Distribution") +
+  ggtitle("Posterior Danceability\nCoefficient Distribution (Standardized)") +
   labs(color="Decade") +
   scale_color_manual(values=cbPalette)
 ggsave("./plots/danceabiltiy_dist.png", height=5, width=7)

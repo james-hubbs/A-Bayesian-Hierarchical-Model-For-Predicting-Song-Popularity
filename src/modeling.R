@@ -1,8 +1,8 @@
 library(rstan)
 library(tidyverse)
 
-setwd("~/STAT775/Project")
-source("load.R")
+setwd("~./STAT775/Project")
+source("./src/load.R")
 
 prior_predictive_sims = FALSE
 posterior_sims = TRUE
