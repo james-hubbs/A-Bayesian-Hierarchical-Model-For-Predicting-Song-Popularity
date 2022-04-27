@@ -1,8 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
+# A simple script to pull playlist data from the Spotify Web API 
+# Used for "A Bayesian Hierarchical Model For Predicting Song Popularity"
 
 import os
 import time
@@ -12,10 +9,6 @@ from datetime import date
 import spotipy.util
 from spotipy.oauth2 import SpotifyClientCredentials
 import pandas as pd
-
-
-# In[2]:
-
 
 # List of playlists to request
 playlist_links = ["https://open.spotify.com/playlist/37i9dQZF1DWXQyLTHGuTIz",
@@ -87,9 +80,6 @@ def authenticate(client_id, client_secret):
 sp = authenticate(client_id, client_secret)
 
 
-# In[4]:
-
-
 # Override print for json/dict data
 def prettyprint(x):
     if type(x) is dict:
@@ -107,9 +97,6 @@ def remove_key(container, key):
     if type(container) is list:
         for v in container:
             remove_key(v, key)
-
-
-# In[5]:
 
 
 # Request track data for Spotify playlists
@@ -140,9 +127,6 @@ playlist_data = get_playlist_data(playlist_URIs)
 
 # The "available_markets" key is gross and useless
 remove_key(playlist_data, "available_markets")
-
-
-# In[ ]:
 
 
 def get_user_data(username, client_id, client_secret, redirect_uri="http://localhost:7777/callback",
@@ -176,11 +160,6 @@ def get_user_data(username, client_id, client_secret, redirect_uri="http://local
     with open(user_data) as f:
         data = json.load(f)
     return data[0]["items"]
-    
-user_data = get_user_data("james.m.hubbs@gmail.com", client_id, client_secret, song_limit=100)
-
-
-# In[6]:
 
 
 # Transform the Json response to a Pandas dataframe
@@ -295,6 +274,5 @@ def transform_to_df(response_data, source, write_to_csv=False):
     else:
         return
 
-user_df = transform_to_df(user_data, source="user", write_to_csv=True)
-playlist_df = transform_to_df(playlist_data, source="playlist", write_to_csv=True)
 
+playlist_df = transform_to_df(playlist_data, source="playlist", write_to_csv=True)
