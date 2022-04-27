@@ -16,10 +16,6 @@ post_summary = post_model[[1]]
 # Load standardized summary model, to compare coefficients
 post_summary_stand = dget("./models/post_summary_standardized.txt")
 
-# Todo: 
-#  - standardized coefficient plot
-#  - something with beta samples (full dist)?
-
 
 ##############################
 # Track Popularity by Decade #

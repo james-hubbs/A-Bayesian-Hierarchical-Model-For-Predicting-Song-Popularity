@@ -60,13 +60,7 @@ model {
 
 
 generated quantities{
-  // prior predictive samples
-  // real alpha_prior = normal_rng()
-  // real beta_prior = 
-  // real<lower = 0> sigma;
-  // sigma = y_sd * std_sigma;
-  
-  // posterior predictive samples?
+  // posterior predictive samples
   vector[n] y_pred;
   for(i in 1:n){
     y_pred[i] = normal_rng(alpha[g[i]] + X[i, ]*beta[, g[i]], sigma);
