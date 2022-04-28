@@ -32,17 +32,6 @@ ggplot(data, aes(y=track_pop, x=as.factor(release_decade))) +
 ggsave("./plots/track_pop_decade.png", height=5, width=7)
 
 
-# data_by_artist = data %>% 
-#   select(artist_name, track_pop, artist_pop, track_loudness, 
-#         track_danceability, track_speechiness, 
-#         track_tempo, track_valence,
-#         track_instrumentalness, track_acousticness,
-#         track_liveness, track_duration) %>% 
-#   group_by(artist_name) %>% 
-#   summarise_all(mean)
-       
-
-
 #####################
 # Predictor Trends #
 ###################
@@ -332,5 +321,41 @@ for(predictor in predictors){
           axis.text=element_text(color="black")) +
   xlab(predictor_formatted) + ylab("Popularity") + 
     ggtitle(paste("Popularity vs ", predictor_formatted, sep="")))
-  ggsave(paste("./plots/pop_vs_", predictor, ".png", sep=""),height=5, width=7)
+  ggsave(paste("./plots/pop_vs_", predictor, ".png", sep=""), height=5, width=7)
 }
+
+###################################
+# "Understanding the Data" chart #
+#################################
+
+song_1 = "All Too Well (10 Minute Version) (Taylor's Version) (From The Vault)"
+song_2 = "Butter"
+vars = c("track_name", "track_danceability", "track_valence", "track_acousticness")
+
+twosong_data = data %>%  filter(playlist_name == "Top Hits of 2021",
+                              track_name==song_1 | track_name==song_2) %>% 
+                    select(all_of(vars)) %>% pivot_longer(cols=vars[vars!= "track_name"]) %>%
+                    mutate(name = str_to_title(str_remove(name, "track_")))
+ggplot(twosong_data, aes(x=name, y=value, fill=track_name)) + 
+  geom_col(position="dodge2", color="black") +
+  labs(fill="") +
+  scale_fill_manual(values = c("#c5050c", "#646569", "#282728"), 
+                    labels=c("All Too Well (10 Minute Version) (Taylor's Version) (From The Vault)"="All Too Well (10 Minute Version)\nTaylor Swift",
+                             "Butter"="Butter\nBTS")) +
+  ggtitle("   Audio Features: \"All Too Well\" vs \"Butter\"") + 
+  xlab("Audio Feature") + ylab("Value") +
+  theme_bw() + ylim(0, 1)+
+  theme(plot.title=element_text(face="bold", size=16), 
+        axis.title=element_text(size=12),
+        plot.subtitle=element_text(size=8, face="plain", color="black"),
+        axis.text=element_text(color="black", size=10),
+        legend.position="top", legend.justification='left', legend.direction="horizontal",
+        legend.text=element_text(size=12))
+ggsave("./plots/alltoowell_v_levitating.png", height=5, width=7)
+
+
+
+
+
+
+
