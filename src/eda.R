@@ -352,8 +352,22 @@ ggplot(twosong_data, aes(x=name, y=value, fill=track_name)) +
         legend.text=element_text(size=12))
 ggsave("./plots/alltoowell_v_butter.png", height=5, width=7)
 
+########################
+# Numerical Summaries #
+#######################
+post_predictions_wide = post_predictions %>% pivot_wider(id_cols="index", 
+                                                         values_from="value",
+                                                         names_from="y") %>% 
+                        mutate(residual=Observed-Predicted)
 
-
+residuals = post_predictions_wide %>% pull(residual)
+observed = post_predictions_wide %>% pull(Observed)
+predicted = post_predictions_wide %>% pull(Predicted)
+RMSE = round(sqrt(sum(residuals^2)/length(observed)), 2)
+MAPE = round(100*sum(abs(residuals/observed))/length(observed), 2)
+avg_ess = mean(post_summary$n_eff)
+avg_rhat = mean(post_summary$Rhat)
+sigma2 = post_summary["sigma", "mean"]
 
 
 
