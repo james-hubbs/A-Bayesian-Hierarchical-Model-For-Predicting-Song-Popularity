@@ -3,7 +3,7 @@ library(tidyverse)
 
 setwd("~./STAT775/Project")
 source("./src/load.R")
-
+dir.create("./models/", showWarnings = FALSE)
 prior_predictive_sims = FALSE
 posterior_sims = TRUE
 standardize = FALSE 
