@@ -299,9 +299,8 @@ modeling_data = data %>% select(track_pop, artist_pop, track_loudness,
                        track_danceability, track_speechiness, 
                        track_tempo, track_valence,
                        track_instrumentalness, track_acousticness,
-                       track_liveness, track_duration) %>% 
+                       track_liveness, track_duration)
   
-# modeling_data = modeling_data %>% rename("artiartist ")c
 predictors = c("artist_pop", "track_loudness", "track_danceability", 
                "track_speechiness","track_tempo", "track_valence",
                "track_instrumentalness", "track_acousticness",
@@ -319,7 +318,7 @@ for(predictor in predictors){
           axis.title=element_text(size=10),
           plot.subtitle=element_text(size=8, face="plain", color="black"),
           axis.text=element_text(color="black")) +
-  xlab(predictor_formatted) + ylab("Popularity") + 
+  xlab(predictor_formatted) + ylab("Popularity") +
     ggtitle(paste("Popularity vs ", predictor_formatted, sep="")))
   ggsave(paste("./plots/pop_vs_", predictor, ".png", sep=""), height=5, width=7)
 }
@@ -351,7 +350,7 @@ ggplot(twosong_data, aes(x=name, y=value, fill=track_name)) +
         axis.text=element_text(color="black", size=10),
         legend.position="top", legend.justification='left', legend.direction="horizontal",
         legend.text=element_text(size=12))
-ggsave("./plots/alltoowell_v_levitating.png", height=5, width=7)
+ggsave("./plots/alltoowell_v_butter.png", height=5, width=7)
 
 
 
