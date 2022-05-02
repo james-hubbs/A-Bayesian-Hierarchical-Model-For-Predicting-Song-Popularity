@@ -367,6 +367,10 @@ avg_ess = mean(post_summary$n_eff)
 avg_rhat = mean(post_summary$Rhat)
 sigma2 = post_summary["sigma", "mean"]
 
+rss = sum((observed-predicted)**2)
+tss = sum((observed-mean(observed))**2)
+r_squared = 1 - (rss/tss)
+
 
 
 
