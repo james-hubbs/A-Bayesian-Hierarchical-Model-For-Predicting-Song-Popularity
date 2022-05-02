@@ -54,14 +54,14 @@ for(var in c("track_loudness",
     geom_line(alpha=0.8, color="#646569") + 
     geom_point(alpha=0.8, color="#646569") + 
     geom_smooth(method="loess", formula="y~x", color="#c5050c", se=FALSE, size=1.1) +
-    theme_bw() + ggtitle(paste("Average", var_formatted, "By Year"), 
+    theme_minimal() + ggtitle(paste("Average", var_formatted, "By Year"), 
                          subtitle="1970-2021") +
-    theme(plot.title=element_text(face="bold", size=20), 
-          axis.title=element_text(size=12, color="black"),
-          plot.subtitle=element_text(size=12, face="plain", color="black"),
-          axis.text=element_text(color="black")) +
+    theme(plot.title=element_text(face="bold", size=20, color="#282728"), 
+          axis.title=element_text(size=12, color="#282728"),
+          plot.subtitle=element_text(size=12, face="plain", color="#282728"),
+          axis.text=element_text(color="#282728", size=12)) +
     xlab("\nYear") + ylab(paste("Average", var_formatted, "\n")))
-  ggsave(paste("./plots/", var, "_trend_.png", sep=""), height=5, width=7)
+  ggsave(paste("./plots/", var, "_trend_.png", sep=""), height=5, width=7, bg="white")
   
 }
 
@@ -202,8 +202,6 @@ ggplot(post_predictions, aes(linetype=y)) +
         axis.text=element_text(color="black"))
 ggsave("./plots/post_predictions.png", height=5, width=7)
 
-# (RMSE = sqrt(1/n * sum(data_post$residual^2)))
-
 #############
 # Residuals #
 #############
@@ -336,21 +334,21 @@ twosong_data = data %>%  filter(playlist_name == "Top Hits of 2021",
                     select(all_of(vars)) %>% pivot_longer(cols=vars[vars!= "track_name"]) %>%
                     mutate(name = str_to_title(str_remove(name, "track_")))
 ggplot(twosong_data, aes(x=name, y=value, fill=track_name)) + 
-  geom_col(position="dodge2", color="black") +
+  geom_col(position="dodge2") +
   labs(fill="") +
   scale_fill_manual(values = c("#c5050c", "#646569", "#282728"), 
-                    labels=c("All Too Well (10 Minute Version) (Taylor's Version) (From The Vault)"="All Too Well (10 Minute Version)\nTaylor Swift",
+                    labels=c("All Too Well (10 Minute Version) (Taylor's Version) (From The Vault)"="All Too Well (10 Minute Version)  \nTaylor Swift",
                              "Butter"="Butter\nBTS")) +
   ggtitle("   Audio Features: \"All Too Well\" vs \"Butter\"") + 
-  xlab("Audio Feature") + ylab("Value") +
-  theme_bw() + ylim(0, 1)+
-  theme(plot.title=element_text(face="bold", size=16), 
-        axis.title=element_text(size=12),
-        plot.subtitle=element_text(size=8, face="plain", color="black"),
-        axis.text=element_text(color="black", size=10),
+  xlab("\nAudio Feature") + ylab("Value\n") +
+  theme_minimal() + ylim(0, 1)+
+  theme(plot.title=element_text(face="bold", size=16, color="#282728"), 
+        axis.title=element_text(size=12, color="#282728"),
+        plot.subtitle=element_text(size=8, face="plain", color="#282728"),
+        axis.text=element_text(color="#282728", size=12),
         legend.position="top", legend.justification='left', legend.direction="horizontal",
-        legend.text=element_text(size=12))
-ggsave("./plots/alltoowell_v_butter.png", height=5, width=7)
+        legend.text=element_text(size=12, color="#282728"))
+ggsave("./plots/alltoowell_v_butter.png", height=5, width=9, bg="white")
 
 ########################
 # Numerical Summaries #
