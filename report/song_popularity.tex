@@ -1,5 +1,7 @@
 \documentclass[12pt, twoside]{article}
 \input{stat775_project_header} % includes all of the macros and sets default layout and formating
+\usepackage{graphicx} %Loading the package
+\graphicspath{{../plots/}}
 
 \title{A Bayesian Hierarchical Model \\ For Predicting Song Popularity\footnote{Data and code are available on \href{https://github.com/james-hubbs/A-Bayesian-Hierarchical-Model-For-Predicting-Song-Popularity}{GitHub}}}
 \author{James Hubbs}
@@ -43,13 +45,24 @@ liveness & Detects the presence of an audience in the recording. \\
 loudness & The overall loudness of a track in decibels (dB). \\
 speechiness & Speechiness detects the presence of spoken words in a track. \\
 tempo & The overall estimated tempo of a track in beats per minute (BPM). \\
-valence & A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. 
+valence & A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. \\
+energy & Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity.
+\label{table:audio_features}
 \end{tabular}
 \end{table}
 Despite a lack of detail surrounding how these features are constructed by Spotify, it is generally easy to understand them intuitively. For example, Billie Eilish's ``Your Power," a soft acoustic folk ballad that essentially uses only voice and acoustic guitar, is one of the highest scoring ``acousticness" songs in the entire dataset. 
 
+As another example, consider two wildly popular songs from 2021: ``All Too Well (10 Minute Version) (Taylor's Version)" by Taylor Swift and ``Butter" by BTS. ``All Too Well" is a lyrically-driven power ballad that scenically ruminates on the tribulations of a past relationship. ``Butter" is an infinitely catchy, synth-driven dance pop song.
+
+\begin{figure}[H] 
+\centering
+\includegraphics[width=0.7\textwidth]{alltoowell_v_butter.png}
+\caption{Audio feature comparison between Taylor Swift's ``All Too Well" and BTS's ``Butter". The upbeat, buoyant vibe of ``Butter" leads to a much higher valence than ``All Too Well". Similarly, the complete lack of acoustic instrumentation in ``Butter" results in a near-zero acousticness score. Although we might expect ``Butter" to score radically higher on danceability than ``All Too Well", danceability is in fact comparable between songs (though ``Butter" does score slightly higher). Both have a steady, consistent beat and use little rhythmic fluctuation.}
+\label{fig:alltoowell_vs_butter} 
+\end{figure}
+
 \subsection{Hierarchical Nature of the Data}
-Songs within a certain period of time are likely to be correlated. Popular songs that were released in the 1970s, for instance, often share some characteristics. The same is true for other time periods. Similarly, since we are measuring present popularity of songs, rather than historic popularity, it may be the case that a listener's relationship with audio features could vary by time period. A listener may enjoy ``danceable" songs from the 1980s, but generally dislike more modern songs that score high in danceability (the converse, of course, may also be true for other listeners). It's for these reasons that I view the data through a hierarchical lens, using release decade as the grouping variable. In principle, a more narrow grouping (e.g., by year) could be employed. Though music is often conceptualized in a decade-by-decade fashion, so decade is a natural choice for grouping the data.
+Songs within a certain period of time are likely to be correlated. Popular songs that were released in the 1970s, for instance, often share some characteristics. The same is true for other time periods. Similarly, since we are measuring present popularity of songs, rather than historic popularity, it may be the case that a listener's relationship with audio features could vary by time period. A listener may enjoy ``danceable" songs from the 1980s, but generally dislike more modern songs that score high in danceability (the converse, of course, may also be true for other listeners). It's for these reasons that I view the data through a hierarchical lens, using release decade as the grouping variable. In principle, a more narrow grouping (e.g., by year) could be employed. Since music is often conceptualized in a decade-by-decade fashion, decade is a natural grouping for the data.
 
 \subsection{Exploration}
 There is much to be learned about this dataset through visualization.
@@ -101,7 +114,11 @@ There are other interesting temporal features of this dataset. In particular, th
 % \caption{}
 % \label{fig:predictor_cor} % useful for hyperref'ing later
 % \end{figure}
-The primary interest is in the relationship between the predictors and popularity. I consider 10 predictors. Visual inspection suggests, surprisingly, that these relationships are weak:
+In addition to the 9 audio features described in Table \ref{table:audio_features}, artist popularity is also considered. As one would expect, this predictor simply measures the overall popularity of a song's artist. Artist popularity is used, in some sense, as a control variable. We ultimately aim to understand the predictive relationship between song popularity and audio features, but it seems likely that some artists could reach such a high level of fame and recognition that their songs become popular independently from their audio features. We will therefor allow artist popularity to enter the model, serving as a type of control.
+
+Further, the ``energy" feature was omitted from consideration due to reasonably high colinearity with several other features. In particular, its correlation coefficient with loudness, acousticness, and valence was 0.70, -0.60, and 0.40, respectively. 
+
+Visual inspection suggests that the relationships between song popularity and each of the 10 predictors in consideration are surprisingly weak:
 
 \begin{figure}[H]
 \begin{subfigure}[b]{0.5\textwidth}
@@ -128,6 +145,10 @@ The primary interest is in the relationship between the predictors and popularit
 \caption{}
 \label{fig:duration_trend}
 \end{subfigure}
+\end{figure}
+
+\begin{figure}[H]
+\ContinuedFloat
 \begin{subfigure}[b]{0.5\textwidth}
 \centering
 \includegraphics[width = \textwidth]{pop_vs_track_instrumentalness.png}
@@ -141,10 +162,6 @@ The primary interest is in the relationship between the predictors and popularit
 \label{fig:duration_trend}
 \end{subfigure}
 \label{fig:multipart_figure}
-\end{figure}
-
-\begin{figure}[H]
-\ContinuedFloat
 \begin{subfigure}[b]{0.5\textwidth}
 \centering
 \includegraphics[width = \textwidth]{pop_vs_track_loudness.png}
@@ -169,23 +186,23 @@ The primary interest is in the relationship between the predictors and popularit
 \caption{}
 \label{fig:duration_trend}
 \end{subfigure}
-\caption{Response vs Predictors}
+\caption{Response vs predictor scatter plots}
 \end{figure}
 
-TODO: brief commentary.
-
-Also need to explain why artist popularity is considered a predictor, since it isn't an audio feature. The idea is that we basically want to control for artist popularity. A super popular artist could put out literally anything and it will be popular regardless of audio features. 
+Based on these figures, the task of predicting song popularity seems, at first glance, formidable. 
 
 \section{Modeling}
 
-I estimate a standard linear hierarchical model with $J=10$ predictors and $T=6$ decades by which the data are grouped.
+I estimate a standard linear hierarchical model with $P=10$ predictors and $T=6$ decades by which the data are grouped. The model was fit using Stan. 
 
 $\text{Let } Y_{it} \text{ denote the popularity of song } i \text{ in decade } t$. 
 
+Then assume
+
 \begin{align*}
-Y_{it} \mid \alpha_t \ \beta_{jt} \ \sigma^2 & \sim N(\mu_{it}, \sigma^2) \text{ where } \mu_{it} = \alpha_t + x_i^T\beta_{jt} \\
+Y_{it} \mid \alpha_t \ \bm{\beta}_{t} \ \sigma^2 & \sim N(\mu_{it}, \sigma^2) \text{ where } \mu_{it} = \alpha_t + x_i^T\bm{\beta}_{t} \\
 \alpha_t \mid \mu_\alpha \ \tau_\alpha^2 & \sim N(\mu_{\alpha}, \tau^2_\alpha) \\
-\beta_{jt} \mid \mu_{j} \ \tau_{\beta} & \sim N(\mu_{\beta_j}, \tau_\beta^2) \\
+\beta_{jt} \mid \mu_{\beta_j} \ \tau_{\beta}^2 & \sim N(\mu_{\beta_j}, \tau_\beta^2) \\
 \mu_\alpha & \sim N(50, 5) \\
 \mu_{\beta_j} & \sim N(\Bar{\mu}_{\beta_{j}}, 1) \\
 \tau_\beta^2 & \sim \text{Inv.Gamma}(1.5, 1) \\
@@ -193,13 +210,31 @@ Y_{it} \mid \alpha_t \ \beta_{jt} \ \sigma^2 & \sim N(\mu_{it}, \sigma^2) \text{
 \sigma^2 & \sim \text{Inv.Gamma}(1.5, 0.3)
 \end{align*}
 
-The hyperparameter $\Bar{\mu}_{\beta_{j}}$ were set to reflect a priori beliefs regarding the sign of each coefficient. It was set to $-0.10$ for instrumentalness, acousticness, liveness, and duration, reflecting the belief that the posterior mean for the coefficients associated with these predictors should be negative. For all other predictors, it was set to $0.10$ (since, for instance, we expect the relatiomship between popularity and danceability to be positive). The relatively small absolute value of $0.10$ was chosen so as to not be overly strong. 
+The hierarchical structure defined above allows for posterior intercepts and slopes to vary by decade. This is important since each decade has a variable base-level popularity, and we assume the effect of each predictor on popularity may vary by decade. $\bm{\beta}_{t}$ is the length-$P$ vector of predictor coefficients for decade $t$. Within the second layer, $\beta_{jt}$ is therefor the $j$-th coefficient in decade $t$ and $\alpha_t$ is the intercept within decade $t$. The third layer defines priors and their hyperparameters, which were set using a combination of prior predictive checks and a priori beliefs. In particular, the hyperparameters $\Bar{\mu}_{\beta_{j}}$ were set to reflect a priori beliefs regarding the sign of each coefficient. It was set to $-0.10$ for instrumentalness, acousticness, liveness, and duration, reflecting the belief that the posterior mean for the coefficients associated with these predictors should be negative. For all other predictors, it was set to $0.10$ (since, for instance, we expect the relationship between popularity and danceability to be positive). The relatively small absolute value of $0.10$ was chosen so as to not be overly strong. Further, note that the $\beta_{jt}$ coefficients share a variance parameter. That is, the variability of the effect of one predictor is assumed to be the same as the variability of the effect of some other predictor. 
 
-TODO: More commentary on the model (e.g., pooled variance for coefficients--variability of the effect of one predictor is essentially the same as the variability of the effect of some other predictor. Means however vary by predictor, since of course the effect of one could differ greater from the effect of another.)
+Some numerical summaries are provided below:
 
-Also TODO: Add some kind of numerical summary of the model. (posterior means of coefficients, MAPE, RMSE, etc.)
+\begin{table}[H]
+\centering
+\caption{Numerical Summary Statistics}
+\label{tab:results}
+\def\arraystretch{1.5}
+\begin{tabular}{l  p{2cm}  p{3cm}} % note the 
+\hline
+Quantity & Value \\ \hline
+RMSE & 11.59 \\
+MAPE & 19.83\% \\
+$R^2$ & 0.295 \\
+$\sigma^2$ & 11.62 \\
+Mean ESS & 3918 \\
+Mean $\hat{R}$ & 1.00003
+\label{table:model_sum}
+\end{tabular}
+\end{table}
 
-Here are some more figures that I intend to include (and comment on). This is all \textit{very} incomplete:
+The model is clearly not predicting particularly well; on average, predictions miss by about 20\% (though much of this is due to the model's difficulty when predicting low popularity songs---for songs with observed popularity greater than 0.30, the RMSE falls to 9.85 and the MAPE falls to 13.3\%). It does, at least, explain approximately 30\% of variability. Convergence diagnostics (ESS and $\hat{R}$) were acceptable for all parameters. 
+
+To get a better idea of the model's performance, we can see how the posterior predictive distribution updated the prior predictive distribution.
 
 \begin{figure}[H]
 \begin{subfigure}[b]{0.5\textwidth}
@@ -214,43 +249,56 @@ Here are some more figures that I intend to include (and comment on). This is al
 \caption{}
 \label{fig:post}
 \end{subfigure}
-\caption{Posterior looks pretty bad but it does update the prior reasonably}
-\end{figure}
-Why's there so much space here ahhh
-\begin{figure}[H] % H forces the figure to appear in this location, h! tries really hard to do the same thing
-\centering
-\includegraphics[width=0.7\textwidth]{standardized_coeffs.png} % no need to specify a file extension & pay attention to scaling by width!
-\caption{Danceability has largest effect on popularity.}
-\label{fig:standardized_coefs} % useful for hyperref'ing later
+\caption{Prior vs Posterior prediction means. The prior distribution placed almost all density near 75. The posterior pulls the prior leftward to better reflect the observed density, though very little density is placed near very low or very high values of popularity.}
 \end{figure}
 
-\begin{figure}[H] % H forces the figure to appear in this location, h! tries really hard to do the same thing
-\centering
-\includegraphics[width=0.7\textwidth]{danceabiltiy_dist.png} % no need to specify a file extension & pay attention to scaling by width!
-\caption{Danceability effect not variable across decades (not true for all predictors). We really like dancey songs regardless of decade!}
-\label{fig:danceability_dist} % useful for hyperref'ing later
-\end{figure}
+The negligible density around small values of popularity for the posterior predictive distribution is reflected in the residual vs fitted figure below, where we see that the model systemically over-predicts songs with low popularity:
 
 \begin{figure}[H] % H forces the figure to appear in this location, h! tries really hard to do the same thing
 \centering
 \includegraphics[width=0.7\textwidth]{residuals.png} % no need to specify a file extension & pay attention to scaling by width!
-\caption{Probably don't care too much about the residuals, but this shows that there is a systemic problem of predicting low-popularity songs. Have to sympathize with the model a bit, though. Why does "Money For Nothing", a song with hundreds of millions of plays on Spotify, have a popularity score under 10? Also should note that fitted here refers to posterior mean predictions.}
+\caption{Residuals vs Fitted. Fitted values correspond to posterior means for each posterior predictive distribution.}
 \label{fig:residuals} % useful for hyperref'ing later
 \end{figure}
 
+Despite the indication of weak predictive performance, it's still of interest to assess which predictors are most influential. 
+
+\begin{figure}[H] % H forces the figure to appear in this location, h! tries really hard to do the same thing
+\centering
+\includegraphics[width=0.7\textwidth]{standardized_coeffs.png} % no need to specify a file extension & pay attention to scaling by width!
+\caption{Standardized posterior coefficient means. The data suggest that danceability has largest effect on popularity.}
+\label{fig:standardized_coefs} % useful for hyperref'ing later
+\end{figure}
+
+We see that danceability appears most predictive of popularity---popular songs will typically leverage a pronounced, predictable beat with minimal rhythmic fluctuation. 
+
+A hierarchical model with variable intercepts and slopes was used under the assumption that the effect of each predictor on popularity may vary by decade. To verify this assumption, we can plot the posterior distribution for each predictor. We find that for some predictors the effect does indeed vary by decade; for others, however, it does not.
+
+\begin{figure}[H]
+\begin{subfigure}[b]{0.5\textwidth}
+\centering
+\includegraphics[width = \textwidth]{danceabiltiy_dist.png}
+\caption{}
+\label{fig:prior}
+\end{subfigure}
+\begin{subfigure}[b]{0.5\textwidth}
+\centering
+\includegraphics[width = \textwidth]{loudness_dist.png}
+\caption{}
+\label{fig:post}
+\end{subfigure}
+\caption{Posterior distributions of danceability and loudness coefficients. The effect of danceability does not vary much at all by decade, whereas the effect of loudness does vary by decade (albeit slightly). }
+\end{figure}
+
 \section{Discussion}
+This analysis has shown that Spotify's audio features are weakly predictive of song popularity. Our collective perception of music is complicated. In some sense, it's not particularly surprising that popularity resists simplicity---a mere 10 predictors is generally insufficient for predicting popularity with confidence. That being said, the audio features that were considered do explain some variability in popularity, with the model suggesting danceability is most predictive.  
 
-TODO.
-
-% You should conclude your report with a short discussion.
-% Immediately following the discussion should be a list of references.
-% If you do not already use BibTeX and natbib, now is a great time to learn!
-% You should cite any sources using the commands \texttt{citet} for inline references and \texttt{citep} for parenthetical references. 
-% So you would use \texttt{citet} to write something like ``\citet{Deshpande2019_mSSL} introduced an EM-like algorithm for simultaneous variable and covariance selection in multi-outcome linear models'' and you would use \texttt{citep} for a sentence like ``Spike-and-slab priors can be effectively deployed to perform simultaneous variable and covariance selection in multi-outcome linear models \citep{Deshpande2019_mSSL}.''
-
-% You should save your references in a \texttt{.bib} file that is located in the same directory as your LaTeX files.
-
-\bibliography{references}
-
+Indeed, there are other (unconsidered) features that may be important: 
+\begin{itemize}
+  \item Lyrical sentiment. The valence feature considers musical sentiment, but lyrical sentiment  may also be predictive of popularity.
+  \item Marketing. Songs that are marketed heavily will, of course, likely rise in popularity.
+  \item The TikTok Effect. Songs that circulate on TikTok tend to grow in popularity\footnote{\href{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}}. How can we measure a song's ability to resonate with TikTok's primary audience?
+  \item Seasonality. Songs that release during (or immediately before) summer may see increased popularity.
+\end{itemize}
 
 \end{document}
