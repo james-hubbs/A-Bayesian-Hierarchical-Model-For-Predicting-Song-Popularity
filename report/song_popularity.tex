@@ -293,12 +293,16 @@ A hierarchical model with variable intercepts and slopes was used under the assu
 \section{Discussion}
 This analysis has shown that Spotify's audio features are weakly predictive of song popularity.  In some sense, it's not particularly surprising that song popularity resists predictive simplicity---a mere 10 predictors is generally insufficient for predicting popularity with confidence. That being said, the audio features that were considered do explain some variability in popularity, with the model suggesting danceability is most predictive.  
 
-Indeed, there are other (unconsidered) features that may be important: 
+One key limitation of this analysis should be mentioned. The audio features in consideration are all aggregate measures across an entire song. For instance, loudness measures the overall loudness of the song from beginning to end. But as a hypothetical example, it could be the case that what matters most is not how loud the song is in an aggregate sense, but the contrast in loudness between, say, a song's verse and chorus. These audio features could potentially have greater predictive power if they were available not simply as aggregate summaries, but instead as time-based measures that fluctuate throughout the duration of a song---this is, after all, more consistent with how we naturally perceive music. 
+
+Further, there are other (unconsidered) features that may be important when predicting popularity: 
 \begin{itemize}
+ \item Marketing: Songs that are marketed heavily will, of course, likely rise in popularity.
   \item Lyrical sentiment: The valence feature considers musical sentiment, but lyrical sentiment  may also be predictive of popularity.
-  \item Marketing: Songs that are marketed heavily will, of course, likely rise in popularity.
-  \item The TikTok Effect: Songs that circulate on TikTok tend to grow in popularity.\footnote{\href{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}{\small{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}}} How can we measure a song's ability to resonate with TikTok's primary audience?
+  \item The TikTok effect: Songs that circulate on the social media platform TikTok tend to grow in popularity.\footnote{\href{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}{\small{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}}} How can we measure a song's ability to resonate with TikTok's primary audience?
   \item Seasonality: Songs that release during (or immediately before) summer may see increased popularity.
 \end{itemize}
+
+These likely-important predictors, however, are clearly outside the scope set out by the primary question of this analysis: Are a song's \textit{audio} features predictive of its popularity? We've found evidence that, in fact, audio features as defined by Spotify are not particularly predictive. 
 
 \end{document}
