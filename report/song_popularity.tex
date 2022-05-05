@@ -31,7 +31,7 @@ As with popularity, the below predictors are not defined by Spotify in great det
 
 \begin{table}[H]
 \centering
-\caption{Definitions of audio feature predictors}
+\caption{Definitions of audio features}
 \label{tab:results}
 \def\arraystretch{1.5}
 \begin{tabular}{l  p{10cm}  p{3.4cm}} % note the 
@@ -87,9 +87,9 @@ There are other interesting temporal features of this dataset. In particular, th
 \end{subfigure}
 \begin{subfigure}[b]{0.5\textwidth}
 \centering
-\includegraphics[width = \textwidth]{track_instrumentalness_trend_.png}
+\includegraphics[width = \textwidth]{track_speechiness_trend_.png}
 \caption{}
-\label{fig:instrumentalness_trend}
+\label{fig:speechiness_trend}
 \end{subfigure}
 \begin{subfigure}[b]{0.5\textwidth}
 \centering
@@ -103,7 +103,7 @@ There are other interesting temporal features of this dataset. In particular, th
 \caption{}
 \label{fig:duration_trend}
 \end{subfigure}
-\caption{Trends in danceability, instrumnetalness, loudness, and duration metrics by year. Popular songs were, on average, getting louder and louder from about 1990 up until around 2010. We also observe a sharp decline in average instrumentalness around 1995. These figures also highlight the importance of considering temporal correlation within the data---songs within particularly periods of time are, on average, similar in their audio features.}
+\caption{Trends in danceability, speechiness, loudness, and duration metrics by year. Popular songs were, on average, becoming more danceable over time. Similarly, they also were getting louder from about 1990 up until around 2010.  Speechiness undergoes a gradual increase starting around 1990, likely corresponding to the global rise in popularity of rap and hip-hop music. These figures also highlight the importance of considering temporal correlation within the data---songs within particularly periods of time are, on average, similar in their audio features.}
 \label{fig:multipart_figure}
 \end{figure}
 % Further, it's not surprising that there is some apparent colinearity among the predictors. Intuitively, we'd expect songs high in acousticness to also score low in loudness, for example.
@@ -114,7 +114,7 @@ There are other interesting temporal features of this dataset. In particular, th
 % \caption{}
 % \label{fig:predictor_cor} % useful for hyperref'ing later
 % \end{figure}
-In addition to the 9 audio features described in Table \ref{table:audio_features}, artist popularity is also considered. As one would expect, this predictor simply measures the overall popularity of a song's artist. Artist popularity is used, in some sense, as a control variable. We ultimately aim to understand the predictive relationship between song popularity and audio features, but it seems likely that some artists could reach such a high level of fame and recognition that their songs become popular independently from their audio features. We will therefor allow artist popularity to enter the model, serving as a type of control.
+In addition to the audio features described in Table \ref{table:audio_features}, artist popularity is also considered. As one would expect, this predictor simply measures the overall popularity of a song's artist. Artist popularity is used, in some sense, as a control variable. We ultimately aim to understand the predictive relationship between song popularity and audio features, but it seems likely that some artists could reach such a high level of fame and recognition that their songs become popular independently from their audio features. We will therefor allow artist popularity to enter the model, serving as a type of control.
 
 Further, the ``energy" feature was omitted from consideration due to reasonably high colinearity with several other features. In particular, its correlation coefficient with loudness, acousticness, and valence was 0.70, -0.60, and 0.40, respectively. 
 
@@ -266,13 +266,13 @@ Despite the indication of weak predictive performance, it's still of interest to
 \begin{figure}[H] % H forces the figure to appear in this location, h! tries really hard to do the same thing
 \centering
 \includegraphics[width=0.7\textwidth]{standardized_coeffs.png} % no need to specify a file extension & pay attention to scaling by width!
-\caption{Standardized posterior coefficient means. The data suggest that danceability has largest effect on popularity.}
+\caption{Standardized posterior coefficient means. The data suggest that danceability has the largest effect on popularity.}
 \label{fig:standardized_coefs} % useful for hyperref'ing later
 \end{figure}
 
 We see that danceability appears most predictive of popularity---popular songs will typically leverage a pronounced, predictable beat with minimal rhythmic fluctuation. 
 
-A hierarchical model with variable intercepts and slopes was used under the assumption that the effect of each predictor on popularity may vary by decade. To verify this assumption, we can plot the posterior distribution for each predictor. We find that for some predictors the effect does indeed vary by decade; for others, however, it does not.
+A hierarchical model with variable intercepts and slopes was used under the assumption that the effect of each predictor on popularity may vary by decade. To verify this assumption, we can plot the posterior distribution for each predictor's coefficient. We find that for some predictors the effect does indeed vary by decade; for others, however, it does not.
 
 \begin{figure}[H]
 \begin{subfigure}[b]{0.5\textwidth}
@@ -291,14 +291,14 @@ A hierarchical model with variable intercepts and slopes was used under the assu
 \end{figure}
 
 \section{Discussion}
-This analysis has shown that Spotify's audio features are weakly predictive of song popularity. Our collective perception of music is complicated. In some sense, it's not particularly surprising that popularity resists simplicity---a mere 10 predictors is generally insufficient for predicting popularity with confidence. That being said, the audio features that were considered do explain some variability in popularity, with the model suggesting danceability is most predictive.  
+This analysis has shown that Spotify's audio features are weakly predictive of song popularity.  In some sense, it's not particularly surprising that song popularity resists predictive simplicity---a mere 10 predictors is generally insufficient for predicting popularity with confidence. That being said, the audio features that were considered do explain some variability in popularity, with the model suggesting danceability is most predictive.  
 
 Indeed, there are other (unconsidered) features that may be important: 
 \begin{itemize}
-  \item Lyrical sentiment. The valence feature considers musical sentiment, but lyrical sentiment  may also be predictive of popularity.
-  \item Marketing. Songs that are marketed heavily will, of course, likely rise in popularity.
-  \item The TikTok Effect. Songs that circulate on TikTok tend to grow in popularity\footnote{\href{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}}. How can we measure a song's ability to resonate with TikTok's primary audience?
-  \item Seasonality. Songs that release during (or immediately before) summer may see increased popularity.
+  \item Lyrical sentiment: The valence feature considers musical sentiment, but lyrical sentiment  may also be predictive of popularity.
+  \item Marketing: Songs that are marketed heavily will, of course, likely rise in popularity.
+  \item The TikTok Effect: Songs that circulate on TikTok tend to grow in popularity.\footnote{\href{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}{\small{https://www.businessinsider.com/how-tiktok-is-changing-the-music-industry-marketing-discovery-2021-7}}} How can we measure a song's ability to resonate with TikTok's primary audience?
+  \item Seasonality: Songs that release during (or immediately before) summer may see increased popularity.
 \end{itemize}
 
 \end{document}
